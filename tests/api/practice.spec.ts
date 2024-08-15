@@ -105,8 +105,7 @@ test('[POST] Create a book and get his ID', async ({ request }) => {
     console.log(`Created booking ID: ${bookingId}`);
 
     expect(response.status()).toBe(200);
-  });
-
+  }); 
   
 test('[PUT] Change the book', async ({ request }) => { 
     const response = await request.patch('/booking/2922', {

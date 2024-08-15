@@ -1,6 +1,48 @@
 import { test, expect,request } from '@playwright/test';
-
+test.describe.configure({ mode: "serial" });
 let bookingId 
+let token;
+
+// Before What Not Working
+// test.beforeAll(async () => {
+//   test('[POST] Try to do TOKEN is variable', async ({ request }) => {
+//     const response = await request.post('/auth', {
+//       headers: { 'Content-Type': 'application/json' },
+//       data: JSON.stringify({
+//         username: 'admin',
+//         password: 'password123',
+//       }),
+//     });
+//     const responseJson = await response.json();
+//     const token = responseJson.token; // assuming the token is returned in the response JSON
+//     console.log(token)
+//     expect(response.status()).toBe(200);
+//   });
+ 
+//   console.log('Before all tests');
+// });
+
+test.beforeAll(async ({ playwright }) => {
+  const context = await playwright.request.newContext();
+  const response = await context.post('/auth', {
+    headers: { 'Content-Type': 'application/json' },
+    data: JSON.stringify({
+      username: 'admin',
+      password: 'password123',
+    }),
+  });
+  const responseJson = await response.json();
+  token = responseJson.token; // assuming the token is returned in the response JSON
+  console.log(token);
+});
+
+test('[POST] Try to do TOKEN is variable', async ({ request }) => {
+  // Use the token obtained in beforeAll
+  const response = await request.post('/some-other-endpoint', {
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+  expect(response.status()).toBe(200);
+});
 
 test('[GET] Check the status of GET request and Time GetBooking method', async ({ request }) => {
     const startTime = Date.now();
@@ -32,36 +74,6 @@ test('[GET] GET all BookID', async ({ request }) => {
       expect(response.status()).toBe(200);
 })
 
-test('[POST] Try to create TOKEN', async ({ request }) => {
-    const response = await request.post('/auth', {
-      headers: { 'Content-Type': 'application/json' },
-      data: JSON.stringify({
-        username: 'admin',
-        password: 'password123',
-      }),
-    });
-    const responseJson = await response.json();
-      console.log(`Response JSON: ${JSON.stringify(responseJson)}`);
-  
-    expect(response.status()).toBe(200);
-  })
-
-
-  test('[POST] Try to do TOKEN is variable', async ({ request }) => {
-    const response = await request.post('/auth', {
-      headers: { 'Content-Type': 'application/json' },
-      data: JSON.stringify({
-        username: 'admin',
-        password: 'password123',
-      }),
-    });
-    const responseJson = await response.json();
-    const token = responseJson.token; // assuming the token is returned in the response JSON
-    console.log(token)
-    expect(response.status()).toBe(200);
-  });
-
-
   test('[POST] Create a book', async ({ request }) => {
     const response = await request.post('/booking', {
       headers: { 'Content-Type': 'application/json' },
@@ -82,12 +94,12 @@ test('[POST] Try to create TOKEN', async ({ request }) => {
   });
 
 
-  test('[POST] Create a book and get his ID', async ({ request }) => {
+  test.only('[POST] Create a book and get his ID', async ({ request }) => {
     
     const response = await request.post('/booking', {
       headers: { 'Content-Type': 'application/json' },
       data: JSON.stringify({
-    "firstname" : "Jimmy",
+    "firstname" : "Ji1mmy",
     "lastname" : "Goodman",
     "totalprice" : 111,
     "depositpaid" : true,
@@ -99,8 +111,8 @@ test('[POST] Try to create TOKEN', async ({ request }) => {
     })
     });
     const responseBody = await response.json();
-    bookingId = responseBody.bookingId;
-
+    bookingId = responseBody.bookingid;
+    console.log(responseBody)
     console.log(`Created booking ID: ${bookingId}`);
 
     expect(response.status()).toBe(200);
@@ -126,7 +138,7 @@ test('[PATCH] Change the one sting in book', async ({ request }) => {
     })
     });
     const responseBody = await response.json();
-    bookingId = responseBody.bookingId;
+    bookingId = responseBody.bookingid;
     
     console.log(`Created booking ID: ${bookingId}`);
 
@@ -134,7 +146,7 @@ test('[PATCH] Change the one sting in book', async ({ request }) => {
   });
 
 test('[PUT] Change the book', async ({ request }) => { 
-    const response = await request.patch('/booking/${bookingId}', {
+    const response = await request.patch(`/booking/${bookingId}`, {
       headers: { 'Content-Type': 'application/json',
                  'Accept': 'application/json',
                  'Cookie': 'token=abc123'
@@ -152,21 +164,20 @@ test('[PUT] Change the book', async ({ request }) => {
     })
     });
     const responseBody = await response.json();
-    bookingId = responseBody.bookingId;
+    bookingId = responseBody.bookingid;
     
     console.log(`Created booking ID: ${bookingId}`);
 
     expect(response.status()).toBe(200);
   });
 
-  test('[DELETE] Delete one book', async ({ request }) => {
-    
-    const response = await request.patch('/booking/${{bookingId}}', {
+  test.only('[DELETE] Delete one book', async ({ request }) => {
+    console.log(bookingId)
+    const response = await request.patch(`/booking/${bookingId}`, {
         headers: { 'Content-Type': 'application/json',
                    'Accept': 'application/json',
                    'Cookie': 'token=abc123'
-         },
-    
-
+        }
 });
+expect(response.status()).toBe(200)
   })
