@@ -8,4 +8,4 @@ test('[GET] Ping Helth Check', async ({ request }) => {
         password: 'password123',
       }),
     });
-})
+});

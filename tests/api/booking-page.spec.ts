@@ -1,5 +1,6 @@
 import { test, expect,request } from '@playwright/test';
 test.describe.configure({ mode: "serial" });
+
 let bookingId 
 let token;
 
