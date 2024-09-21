@@ -3,7 +3,7 @@ import { APIRequestContext } from "@playwright/test";
 export class Request {
   async get(
     request: APIRequestContext, 
-    endpoint: string
+    endpoint: string 
   ) {
     const response = await request.get(endpoint, {
       headers: { Accept: "application/json" },
@@ -16,24 +16,26 @@ export class Request {
     endpoint: string, 
     data: object
   ) {
-    const response = await request.post("/booking", {
+    const response = await request.post(endpoint,{
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify(data),
     });
+    console.log(response)
     return response;
   }
 
   async patch(
     request: APIRequestContext,
     endpoint: string,
+    token: string,
     data: object,
     id: number
   ) {
-    const response = await request.patch(`/booking/${id}`, {
+    const response = await request.patch(`${endpoint}/${id}`, {
       headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Cookie: "token=abc123",
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Cookie': `token=${token}`
       },
       data: JSON.stringify(data),
     });
@@ -43,13 +45,15 @@ export class Request {
   async put(
     request: APIRequestContext, 
     endpoint: string, 
-    data: object
+    data: object,
+    token: string,
+    id: number
   ) {
-    const response = await request.put("/booking", {
+    const response = await request.put(`${endpoint}/${id}`, {
       headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Cookie: "token=abc123",
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Cookie': `token=${token}`
       },
       data: JSON.stringify(data),
     });
@@ -59,14 +63,16 @@ export class Request {
   //How to do dymamic ID when uses this method?
   async delete(
     request: APIRequestContext, 
-    endpoint: string, 
+    endpoint: string,
+    token: string, 
     id: number
   ) {
     try {
-      const response = await request.delete(`/booking/${id}`, {
+      const response = await request.delete(`${endpoint}/${id}`, {
         headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Cookie': `token=${token}`
         },
       });
       return response;
